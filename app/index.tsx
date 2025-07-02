@@ -1,12 +1,35 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Image, StyleSheet, Text, View } from "react-native";
 import { useFonts } from "expo-font";
+import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
-
-   const [fontsLoaded] = useFonts({
-    "BebasNeue": require("../assets/fonts/BebasNeue-Regular.ttf"),
+  const baseUrl = process.env.EXPO_PUBLIC_API_ENDPOINT;
+  const [qrUrl, setQrUrl] = useState("");
+  const [fontsLoaded] = useFonts({
+    BebasNeue: require("../assets/fonts/BebasNeue-Regular.ttf"),
   });
+
+  useEffect(() => {
+    if (!baseUrl) {
+      console.error("API_ENDPOINT environment variable is not set");
+      return;
+    }
+
+    fetch(`${baseUrl}tables/23374e21-2391-41b0-b275-651df88b3b04`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setQrUrl(data.data.qrCode);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch table data:", error);
+      });
+  }, [baseUrl]);
 
   if (!fontsLoaded) {
     return null;
@@ -19,16 +42,32 @@ export default function Index() {
       end={{ x: 1, y: 0 }}
       style={styles.wrapper}
     >
-      <View style={styles.row}>
+      <View style={styles.header}>
         <Image
           source={require("../assets/images/logo.png")}
-          style={{
-            width: 80,
-            height: 80,
-          }}
+          style={styles.logo}
         />
-          <Text style={styles.tableInfo}>TABLE: 01</Text>
-          <Text style={styles.roundInfo}>ROUND 01</Text>
+        <Text style={styles.title}>SCORE LENS</Text>
+      </View>
+
+      <View style={styles.qrContainer}>
+        <View style={styles.qrFrame}>
+          <View style={styles.qrPlaceholder}>
+            <Image
+              source={{ uri: qrUrl }}
+              style={styles.qrImage}
+            />
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.instructions}>
+        <Text style={styles.instructionText}>
+          Scan this QR code to start the match
+        </Text>
+        <Text style={styles.instructionSubtext}>
+          Hope you have a great match and enjoy the game!
+        </Text>
       </View>
     </LinearGradient>
   );
@@ -39,25 +78,62 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  row: {
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 30,
+    justifyContent: "center",
+    marginBottom: 40,
   },
-  tableInfo: {
+  logo: {
+    width: 60,
+    height: 60,
+    marginRight: 15,
+  },
+  title: {
+    color: "white",
+    fontSize: 32,
+    fontWeight: "600",
+    fontFamily: "BebasNeue",
+    letterSpacing: 1,
+  },
+  qrContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  qrFrame: {
+    width: 280,
+    height: 280,
+    borderWidth: 3,
+    borderColor: "white",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+  qrPlaceholder: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  qrImage: {
+    width: 260,
+    height: 260,
+    borderRadius: 10,
+  },
+  instructions: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  instructionText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
     textAlign: "center",
-    color: "white",
-    fontSize: 40,
-    fontWeight: "600",
-    fontFamily: "BebasNeue",
-    letterSpacing: 1,
+    marginBottom: 8,
   },
-  roundInfo: {
-    color: "white",
-    fontSize: 35,
-    fontWeight: "600",
-    fontFamily: "BebasNeue",
-    letterSpacing: 1,
+  instructionSubtext: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 14,
+    textAlign: "center",
   },
 });
