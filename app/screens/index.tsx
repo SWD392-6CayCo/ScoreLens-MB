@@ -1,13 +1,25 @@
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useStomp } from "../hooks/useStomp";
+import { useSubscription } from "../hooks/useSubscription";
 
 export default function Index() {
   const baseUrl = process.env.EXPO_PUBLIC_API_ENDPOINT;
+  const router = useRouter();
   const [qrUrl, setQrUrl] = useState("");
+  const { client, isConnected } = useStomp();
   const [fontsLoaded] = useFonts({
-    BebasNeue: require("../assets/fonts/BebasNeue-Regular.ttf"),
+    BebasNeue: require("../../assets/fonts/BebasNeue-Regular.ttf"),
+  });
+
+  const tableId = "23374e21-2391-41b0-b275-651df88b3b04";
+
+  useSubscription(client, isConnected, '/topic/shot_event', (msg) => {
+    console.log('Received shot event:', msg);
+    // setShot(msg);
   });
 
   useEffect(() => {
@@ -16,7 +28,7 @@ export default function Index() {
       return;
     }
 
-    fetch(`${baseUrl}tables/23374e21-2391-41b0-b275-651df88b3b04`)
+    fetch(`${baseUrl}tables/${tableId}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -44,7 +56,7 @@ export default function Index() {
     >
       <View style={styles.header}>
         <Image
-          source={require("../assets/images/logo.png")}
+          source={require("../../assets/images/logo.png")}
           style={styles.logo}
         />
         <Text style={styles.title}>SCORE LENS</Text>
@@ -54,7 +66,7 @@ export default function Index() {
         <View style={styles.qrFrame}>
           <View style={styles.qrPlaceholder}>
             <Image
-              source={{ uri: qrUrl }}
+              source={{ uri: qrUrl || "" }}
               style={styles.qrImage}
             />
           </View>
@@ -69,6 +81,13 @@ export default function Index() {
           Hope you have a great match and enjoy the game!
         </Text>
       </View>
+
+      <TouchableOpacity onPress={() => {
+        router.push("/screens/match");
+      }}>
+        <Text>Start Match</Text>
+      </TouchableOpacity>
+
     </LinearGradient>
   );
 }

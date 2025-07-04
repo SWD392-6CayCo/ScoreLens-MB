@@ -14,7 +14,7 @@ export default function Match() {
     ]);
 
     const [fontsLoaded] = useFonts({
-        BebasNeue: require("../assets/fonts/BebasNeue-Regular.ttf"),
+        BebasNeue: require("../../assets/fonts/BebasNeue-Regular.ttf"),
     });
 
     if (!fontsLoaded) {
@@ -30,13 +30,17 @@ export default function Match() {
         >
             <View style={styles.row}>
                 <Image
-                    source={require("../assets/images/logo.png")}
+                    source={require("../../assets/images/logo.png")}
                     style={{
                         width: 80,
                         height: 80,
                     }}
                 />
-                <Text style={styles.tableInfo}>TABLE: 01</Text>
+                <View>
+                    <Text style={styles.tableInfo}>TABLE: 01</Text>
+                    <Text style={styles.rateInfo}>rate to: 03</Text>
+                </View>
+
                 <Text style={styles.roundInfo}>ROUND 01</Text>
             </View>
 
@@ -113,6 +117,14 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontFamily: "BebasNeue",
         letterSpacing: 1,
+    },
+    rateInfo: {
+        textAlign: "center",
+        color: "rgba(255,255,255,0.9)",
+        fontSize: 30,
+        fontWeight: "600",
+        letterSpacing: 1,
+        fontFamily: "BebasNeue",
     },
     roundInfo: {
         color: "white",
