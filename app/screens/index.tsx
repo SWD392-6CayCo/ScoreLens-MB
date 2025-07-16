@@ -3,24 +3,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useStomp } from "../hooks/useStomp";
-import { useSubscription } from "../hooks/useSubscription";
 
 export default function Index() {
   const baseUrl = process.env.EXPO_PUBLIC_API_ENDPOINT;
   const router = useRouter();
   const [qrUrl, setQrUrl] = useState("");
-  const { client, isConnected } = useStomp();
+
   const [fontsLoaded] = useFonts({
     BebasNeue: require("../../assets/fonts/BebasNeue-Regular.ttf"),
   });
 
   const tableId = "23374e21-2391-41b0-b275-651df88b3b04";
-
-  useSubscription(client, isConnected, '/topic/shot_event', (msg) => {
-    console.log('Received shot event:', msg);
-    // setShot(msg);
-  });
 
   useEffect(() => {
     if (!baseUrl) {

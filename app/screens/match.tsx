@@ -11,6 +11,7 @@ export default function Match() {
         { time: "18:58", shotNumber: 27, player: "PLAYER 1", result: "SCORED" },
         { time: "19:00", shotNumber: 28, player: "PLAYER 2", result: "MISSED" },
         { time: "19:04", shotNumber: 29, player: "PLAYER 1", result: "MISSED" },
+        { time: "19:10", shotNumber: 30, player: "PLAYER 2", result: "SCORED" },
     ]);
 
     const [fontsLoaded] = useFonts({
