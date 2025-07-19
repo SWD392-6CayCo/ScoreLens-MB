@@ -6,7 +6,7 @@ import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function Index() {
   const baseUrl = process.env.EXPO_PUBLIC_API_ENDPOINT;
@@ -124,12 +124,6 @@ export default function Index() {
         <Text style={styles.instructionSubtext}>
           Hope you have a great match and enjoy the game!
         </Text>
-      </View>
-
-      <View>
-        <TouchableOpacity onPress={() => router.push("/screens/match")}>
-          <Text style={{ color: "black" }}>Go to match</Text>
-        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
