@@ -24,7 +24,8 @@
             "includeSubdomains": true
           }
         ]
-      }
+      },
+      "package": "com.scorelens"
     },
     "web": {
       "bundler": "metro",
@@ -54,6 +55,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "601aa11b-9357-417e-9efe-a2f03f62cf99"
+      }
     }
   }
 }
