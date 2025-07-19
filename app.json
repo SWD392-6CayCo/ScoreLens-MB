@@ -16,7 +16,15 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "networkSecurityConfig": {
+        "domain": [
+          {
+            "domain": "scorelens.onrender.com",
+            "includeSubdomains": true
+          }
+        ]
+      }
     },
     "web": {
       "bundler": "metro",
