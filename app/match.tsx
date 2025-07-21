@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Modal, StyleSheet, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 
 type Player = {
   name: string;
@@ -28,6 +29,7 @@ export default function Match() {
   const [matchData, setMatchData] = useState<MatchInfo | null>(null);
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
+  const [round, setRound] = useState(1);
   const [shots, setShots] = useState<Shot[]>([]);
 
   // Add modal state
@@ -42,7 +44,7 @@ export default function Match() {
   };
 
   const [fontsLoaded] = useFonts({
-    BebasNeue: require("../../assets/fonts/BebasNeue-Regular.ttf"),
+    BebasNeue: require("../assets/fonts/BebasNeue-Regular.ttf"),
   });
 
   function parseMatchInfo(raw: any): MatchInfo {
@@ -101,6 +103,7 @@ export default function Match() {
   }, []);
 
   useEffect(() => {
+    if (!matchData) return;
     const topicShot = "/topic/shot_event/23374e21-2391-41b0-b275-651df88b3b04";
     const topicMatch =
       "/topic/match_event/23374e21-2391-41b0-b275-651df88b3b04";
@@ -111,22 +114,35 @@ export default function Match() {
         console.log("📨 Shot Event Message:", message);
         setShots((prevShots) => {
           const updatedShots = [...prevShots, message?.data];
-          return updatedShots.length > 4 ? updatedShots.slice(1) : updatedShots;
+          return updatedShots.length > 5 ? updatedShots.slice(1) : updatedShots;
         });
       });
 
       webSocketService.subscribe(topicMatch, (message) => {
         console.log("📨 Match Event Message:", message);
+        if (message.code === "WINNING_SET") {
+          //Nofi winner
+          Toast.show({
+            type: "success",
+            text1: "🏆 Set Winner!",
+            text2: message.data,
+            position: "top",
+            topOffset: 50,
+            visibilityTime: 4000,
+          });
 
-        if (message?.code === "WINNING_SET") {
-          if (message?.data?.includes(matchData?.teams?.[0]?.teamName)) {
+          if (message.data?.includes(matchData?.teams?.[0]?.teamName)) {
             setScoreA((prev) => prev + 1);
-          } else if (message?.data?.includes(matchData?.teams?.[1]?.teamName)) {
+          } else if (message.data?.includes(matchData?.teams?.[1]?.teamName)) {
             setScoreB((prev) => prev + 1);
           }
-        }
-
-        if (message?.code === "WINNING_MATCH") {
+          setRound((prevRound) => {
+            if (prevRound < matchData.totalSet) {
+              return prevRound + 1;
+            }
+            return prevRound;
+          });
+        } else if (message.code === "WINNING_MATCH") {
           // Show winner modal
           setWinnerData(message?.data);
           setShowWinnerModal(true);
@@ -143,13 +159,28 @@ export default function Match() {
 
       webSocketService.subscribe(topicMatch, (message) => {
         console.log("📨 Match Event Message:", message);
+        if (message.code === "WINNING_SET") {
+          //Nofi winner
+          Toast.show({
+            type: "success",
+            text1: "🏆 Set Winner!",
+            text2: message.data,
+            position: "top",
+            topOffset: 50,
+            visibilityTime: 4000,
+          });
 
-        if (message?.code === "WINNING_SET") {
-          if (message?.data?.includes(matchData?.teams?.[0]?.teamName)) {
+          if (message.data?.includes(matchData?.teams?.[0]?.teamName)) {
             setScoreA((prev) => prev + 1);
-          } else if (message?.data?.includes(matchData?.teams?.[1]?.teamName)) {
+          } else if (message.data?.includes(matchData?.teams?.[1]?.teamName)) {
             setScoreB((prev) => prev + 1);
           }
+          setRound((prevRound) => {
+            if (prevRound < matchData.totalSet) {
+              return prevRound + 1;
+            }
+            return prevRound;
+          });
         }
       });
     }
@@ -159,20 +190,20 @@ export default function Match() {
       webSocketService.unsubscribe(topicShot);
       webSocketService.unsubscribe(topicMatch);
     };
-  }, []);
+  }, [matchData]);
 
   // Function to close modal and navigate
   const closeWinnerModal = () => {
     setShowWinnerModal(false);
     setWinnerData(null);
-    router.push("/screens");
+    router.push("/");
   };
 
   useEffect(() => {
     if (showWinnerModal) {
       const timer = setTimeout(() => {
         closeWinnerModal();
-      }, 5000); // 5 seconds
+      }, 60000); // 30 seconds
 
       return () => clearTimeout(timer);
     }
@@ -191,7 +222,7 @@ export default function Match() {
     >
       <View style={styles.row}>
         <Image
-          source={require("../../assets/images/logo.png")}
+          source={require("../assets/images/logo.png")}
           style={{
             width: 80,
             height: 80,
@@ -199,10 +230,12 @@ export default function Match() {
         />
         <View>
           <Text style={styles.tableInfo}>TABLE: RVII</Text>
-          <Text style={styles.rateInfo}>rate to: 0{matchData?.raceTo}</Text>
+          <Text style={styles.rateInfo}>race to: 0{matchData?.raceTo}</Text>
         </View>
 
-        <Text style={styles.roundInfo}>ROUND 0{matchData?.totalSet}</Text>
+        <Text style={styles.roundInfo}>
+          ROUND 0{round}/0{matchData?.totalSet}
+        </Text>
       </View>
 
       {/* Teams and Scores */}
@@ -268,7 +301,7 @@ export default function Match() {
                 shot.result === "SCORED" ? styles.scored : styles.missed,
               ]}
             >
-              #{shot.shot}
+              {shot.shot}
             </Text>
             <Text style={styles.shotPlayer}>{getPlayerName(shot.player)}</Text>
             <Text
@@ -293,12 +326,22 @@ export default function Match() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>🏆 MATCH WINNER! 🏆</Text>
-            {winnerData && (
-              <Text style={styles.winnerDetails}>{winnerData}</Text>
+            {winnerData && (scoreA > scoreB) ? (
+              <Text style={styles.winnerText}>
+                {matchData?.teams?.[0]?.teamName} win this match!
+              </Text>
+            ) : (
+              <Text style={styles.winnerText}>
+                {matchData?.teams?.[1]?.teamName} win this match!
+              </Text>
             )}
+            <Text style={styles.finalScoreText}>
+              {scoreA} - {scoreB}
+            </Text>
           </View>
         </View>
       </Modal>
+      <Toast />
     </LinearGradient>
   );
 }
@@ -330,8 +373,8 @@ const styles = StyleSheet.create({
     fontFamily: "BebasNeue",
   },
   roundInfo: {
-    color: "white",
-    fontSize: 35,
+    color: "black",
+    fontSize: 20,
     fontWeight: "600",
     fontFamily: "BebasNeue",
     letterSpacing: 1,
@@ -479,7 +522,7 @@ const styles = StyleSheet.create({
     fontFamily: "BebasNeue",
   },
   finalScoreText: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: "600",
     color: "#333",
     marginBottom: 15,

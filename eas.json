@@ -11,8 +11,21 @@
     "preview": {
       "distribution": "internal"
     },
+    "apk": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_ENDPOINT": "https://scorelens.onrender.com/v3/",
+        "EXPO_PUBLIC_SOCKET_ENDPOINT": "https://scorelens.onrender.com/ws"
+      }
+    },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_ENDPOINT": "https://scorelens.onrender.com/v3/",
+        "EXPO_PUBLIC_SOCKET_ENDPOINT": "https://scorelens.onrender.com/ws"
+      }
     }
   },
   "submit": {

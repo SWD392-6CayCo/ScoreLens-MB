@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import webSocketService from "@/app/services/webSocketService";
+import webSocketService from "./services/webSocketService";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
@@ -15,7 +15,7 @@ export default function Index() {
   const [messCode, setMessCode] = useState({ code: "", data: {} });
 
   const [fontsLoaded] = useFonts({
-    BebasNeue: require("../../assets/fonts/BebasNeue-Regular.ttf"),
+    BebasNeue: require("../assets/fonts/BebasNeue-Regular.ttf"),
   });
 
   const tableId = "23374e21-2391-41b0-b275-651df88b3b04";
@@ -29,7 +29,7 @@ export default function Index() {
             "matchData",
             JSON.stringify(messCode.data)
           );
-          router.push("/screens/match");
+          router.push("/match");
         } catch (error) {
           console.error("Error saving match data:", error);
         }
@@ -45,7 +45,10 @@ export default function Index() {
     webSocketService.connect(() => {
       webSocketService.subscribe(topic, (message) => {
         console.log("📨 Message:", message);
-        setMessCode(message);
+        if(message.code === "MATCH_START"){
+          setMessCode(message);
+        }
+        
       });
     });
     return () => {
@@ -103,7 +106,7 @@ export default function Index() {
     >
       <View style={styles.header}>
         <Image
-          source={require("../../assets/images/logo.png")}
+          source={require("../assets/images/logo.png")}
           style={styles.logo}
         />
         <Text style={styles.title}>SCORE LENS</Text>

@@ -8,7 +8,14 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "build:android": "eas build --platform android --profile production",
+    "build:android-apk": "eas build --platform android --profile apk",
+    "build:ios": "eas build --platform ios --profile production",
+    "build:all": "eas build --platform all --profile production",
+    "build:preview": "eas build --platform all --profile preview",
+    "secrets:list": "echo 'Environment variables configured in eas.json production profile'",
+    "secrets:show": "eas config --profile production"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -42,6 +49,7 @@
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
+    "react-native-toast-message": "^2.3.3",
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "sockjs-client": "^1.6.1"
