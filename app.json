@@ -2,7 +2,7 @@
   "expo": {
     "name": "ScoreLens",
     "slug": "scorelens",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "landscape",
     "icon": "./assets/images/icon.png",
     "scheme": "scorelens",

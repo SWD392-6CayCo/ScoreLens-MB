@@ -196,6 +196,12 @@ export default function Match() {
   const closeWinnerModal = () => {
     setShowWinnerModal(false);
     setWinnerData(null);
+    AsyncStorage.removeItem("matchData");
+    setMatchData(null);
+    setScoreA(0);
+    setScoreB(0);
+    setRound(1);
+    setShots([]);
     router.push("/");
   };
 
@@ -203,7 +209,7 @@ export default function Match() {
     if (showWinnerModal) {
       const timer = setTimeout(() => {
         closeWinnerModal();
-      }, 60000); // 30 seconds
+      }, 60000); // 60 seconds
 
       return () => clearTimeout(timer);
     }
